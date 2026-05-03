@@ -1,113 +1,156 @@
-# 🔍 Real-Time Resistor Detection and Classification Using AI & Arduino
+# 🔌 Real-Time Resistor Detection & Classification System (YOLOv8 + Arduino)
 
-This project combines **computer vision**, **machine learning**, and **Arduino-based hardware control** to detect resistors, read their color bands, classify their resistance values, and sort them in real time.
+## 📌 Overview
 
----
+This project implements an **end-to-end real-time computer vision system** for detecting and classifying resistor values using deep learning. The system integrates **YOLOv8-based object detection and classification models** with an **Arduino-controlled hardware setup** via serial communication.
 
-## 🧠 Project Summary
-
-- Uses a YOLOv8 model to **detect resistor positions** in video or screen input.
-- Crops detected resistor regions and classifies **color bands** using a custom-trained classification model.
-- Sends the resistance value to **Arduino** via serial communication.
-- Arduino moves a **stepper motor or servo** to sort or position the resistor.
+The pipeline enables automatic resistor value recognition and can be extended to **embedded electronics applications** such as sorting, display systems, or robotic control.
 
 ---
 
-## 🖼️ Input & Output
+## ⚙️ Features
 
-- **Input**: Video stream (e.g., webcam or screen capture)
-- **Output**: Detected resistor with bounding box + predicted resistance (e.g., “10 kΩ”)
-- **Hardware**: Arduino receives resistance info and controls mechanism to sort/move resistors.
-
----
-
-## ⚙️ Components
-
-- **YOLOv8 Detection Model (`DET_BEST.pt`)**  
-  Detects location of resistors in the image.
-
-- **Classification Model (`CLS_BEST.pt`)**  
-  Classifies the resistor’s band pattern into discrete resistance values.
-
-- **Arduino Microcontroller**  
-  Receives serial input from Python and executes physical movement (e.g., servo, motor).
+* 🔍 Real-time resistor detection using YOLOv8
+* 🧠 Resistor value classification (Ohm prediction)
+* 📷 Supports live camera and screen input (scrcpy)
+* 🔗 Serial communication with Arduino
+* ⚡ End-to-end pipeline from vision → hardware control
+* 🖥️ GPU acceleration support (CUDA)
 
 ---
 
-## 🧪 How It Works
-
-1. Capture live image or video.
-2. Use YOLOv8 to detect resistor.
-3. Crop the detected area and send to classification model.
-4. Predict resistance label (e.g., 220Ω, 1kΩ, etc.).
-5. Display prediction on screen.
-6. Send result to Arduino via serial port (e.g., COM3).
-7. Arduino activates mechanical system to handle the resistor.
-
----
-
-## 📦 Installation
-
-```bash
-pip install ultralytics opencv-python torch serial
-```
-
-Ensure YOLOv8 weights and classifier weights are in your working directory.
-
----
-
-## ▶️ Running the System
-
-```bash
-python direnç.ipynb
-```
-
-Or convert to `.py` and run with:
-
-```bash
-python detect_resistor.py
-```
-
-Make sure:
-- Arduino is connected and listening via serial
-- `DET_BEST.pt` and `CLS_BEST.pt` are available
-- Correct COM port is set (e.g., `serial.Serial('COM3', 9600)`)
-
----
-
-## 📂 Folder Structure
+## 🧠 System Pipeline
 
 ```
-resistor_ai_sorter/
-├── direnç.ipynb
-├── DET_BEST.pt
-├── CLS_BEST.pt
+Camera / Screen Input
+        ↓
+YOLOv8 Detection Model
+        ↓
+Crop Detected Resistor
+        ↓
+YOLOv8 Classification Model
+        ↓
+Ohm Value Mapping
+        ↓
+Serial Communication
+        ↓
+Arduino Control (Display / Motor / Output)
+```
+
+---
+
+## 🛠️ Tech Stack
+
+* Python
+* PyTorch
+* YOLOv8 (Ultralytics)
+* OpenCV
+* NumPy
+* MSS (screen capture)
+* Arduino (Serial Communication)
+
+---
+
+## 📂 Project Structure
+
+```
+.
 ├── arduino/
-│   └── servo_control.ino
-├── outputs/
-│   └── detected_frames/
+│   └── arduino_step_kontrol.ino
+├── src/
+│   └── predict_resistors_serial.py
+├── training/
+│   └── train.ipynb
+├── models/
+│   ├── DET_BEST.pt
+│   └── CLS_BEST.pt
 └── README.md
 ```
 
 ---
 
-## 💡 Future Ideas
+## 🚀 How It Works
 
-- Improve classification accuracy with larger dataset
-- Add GUI for manual override
-- Log all resistance values for inventory tracking
-- Use camera calibration to improve ROI cropping
+1. The system captures frames from a **camera or screen**
+2. YOLOv8 detects resistor locations
+3. Detected regions are cropped
+4. A classification model predicts resistor values
+5. The predicted value is mapped to a digit
+6. Data is sent to Arduino via serial communication
+7. Arduino performs a physical action (e.g. display or motor control)
+
+---
+
+## 🔌 Arduino Integration
+
+* Python sends predicted resistor values via serial port
+* Arduino reads incoming data and executes corresponding actions
+* Example use cases:
+
+  * 7-segment display output
+  * Stepper motor control
+  * Automated resistor sorting
+
+Arduino code is available in the `/arduino` directory.
+
+---
+
+## ▶️ Usage
+
+### 1. Install dependencies
+
+```
+pip install ultralytics opencv-python numpy torch mss pyserial
+```
+
+### 2. Run the system
+
+```
+python predict_resistors_serial.py --input_source camera
+```
+
+### Optional parameters
+
+```
+--input_source camera | scrcpy
+--det_model path_to_detection_model
+--cls_model path_to_classification_model
+--serial_port COM3
+```
+
+---
+
+## 📊 Training
+
+Model training is provided in:
+
+```
+training/train.ipynb
+```
+
+Includes:
+
+* Dataset preprocessing
+* Model training
+* Evaluation
+
+---
+
+## 📈 Future Improvements
+
+* Improve classification accuracy
+* Add multi-object tracking
+* Deploy on edge devices (Jetson / Raspberry Pi)
+* Extend to full electronic component recognition
 
 ---
 
 ## 👨‍💻 Author
 
-Deniz Arda YILDIZ  
-Email: [denizarda.yildiz@protonmail.com]  
-
+**Deniz Arda Yildiz**
 
 ---
 
-## 📝 License
+## ⭐ Notes
 
-This project is open-source and available under the MIT License.
+This project demonstrates a **real-world AI system combining deep learning with hardware integration**, going beyond standard model training by enabling physical interaction through embedded systems.
